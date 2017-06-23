@@ -282,16 +282,28 @@ class InterventionBackend implements Image_Backend, Flushable
      * @param int $width
      * @param int $height
      * @param string $backgroundColor
+     * @param int $transparencyPercent
      * @return static
      */
-    public function paddedResize($width, $height, $backgroundColor = null)
+    public function paddedResize($width, $height, $backgroundColor = 'FFFFFF', $transparencyPercent = 0)
     {
+        if ($transparencyPercent > 100) {
+            $transparencyPercent = 100;
+        }
+
+        $background = [
+            hexdec(substr($backgroundColor, 0, 2)), // r
+            hexdec(substr($backgroundColor, 2, 2)), // g
+            hexdec(substr($backgroundColor, 4, 2)), // b
+            $transparencyPercent / 100              // a
+        ];
+
         return $this->createCloneWithResource($this->getImageResource()->resizeCanvas(
             $width,
             $height,
             'center',
             false,
-            $backgroundColor
+            $background
         ));
     }
 
